@@ -30,6 +30,9 @@ jobs:
         rm -rf ../gh-pages/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Create .nojekyll file
+      run: echo > ../gh-pages/.nojekyll
 
     - name: Copy built web to gh-pages
       run: cp -r out/* ../gh-pages/  # Use 'out' if you're using 'next export'

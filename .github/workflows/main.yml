@@ -1,0 +1,44 @@
+name: Build and Push Next.js to flutterninja9.github.io
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.12.2'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Next.js application
+      run: npm run build
+
+    - name: Checkout flutterninja9.github.io repository
+      run: |
+        git clone https://github.com/flutterninja9/flutterninja9.github.io.git ../gh-pages
+        rm -rf ../gh-pages/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Copy built web to gh-pages
+      run: cp -r out/* ../gh-pages/  # Use 'out' if you're using 'next export'
+
+    - name: Commit and push to flutterninja9.github.io
+      run: |
+        cd ../gh-pages
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update website"
+        git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/flutterninja9/flutterninja9.github.io.git master
